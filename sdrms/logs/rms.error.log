@@ -1,0 +1,2 @@
+2018/11/23 12:01:29.923 [E] Connect to the redis host 127.0.0.1:6379 failed
+2018/11/23 12:01:29.923 [E] dial tcp 127.0.0.1:6379: connect: connection refused
