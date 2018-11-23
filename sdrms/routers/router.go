@@ -7,6 +7,10 @@ import (
 )
 
 func init() {
+	//Task
+	beego.Router("/task/input", &controllers.TaskController{}, "Post:ReceiveData")
+
+
 	//用户角色路由
 	beego.Router("/role/index", &controllers.RoleController{}, "*:Index")
 	beego.Router("/role/datagrid", &controllers.RoleController{}, "Get,Post:DataGrid")

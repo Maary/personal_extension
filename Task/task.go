@@ -1,4 +1,4 @@
-package main
+package Task
 
 import (
 	"encoding/json"
@@ -67,14 +67,14 @@ func (dc *DataContainer) Send(method sendMethod) {
 }
 
 func send(data interface{}, targetUrl string) bool {
-	param := new(url.Values)
+	param := make(url.Values)
 	dataByte, err := json.Marshal(data)
 	if err != nil {
 		log.Println(err)
 		return false
 	}
 	param.Set("data", string(dataByte))
-	rsp, err := http.PostForm(targetUrl, *param)
+	rsp, err := http.PostForm(targetUrl, param)
 	if err != nil {
 		log.Println(err)
 		return false
