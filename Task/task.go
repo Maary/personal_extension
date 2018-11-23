@@ -23,7 +23,7 @@ const (
 	SEND_PER = sendMethod(1)
 )
 
-func (dc *DataContainer) New(length uint8, slice time.Duration) *DataContainer {
+func New(length uint8, slice time.Duration) *DataContainer {
 	if length <= 0 {
 		panic("Data container store data and send to backend, the length must greater than 0")
 	}
@@ -41,6 +41,10 @@ func (dc *DataContainer) New(length uint8, slice time.Duration) *DataContainer {
 
 func(dc *DataContainer) Push(data interface{}) {
 	dc.Data <- data
+}
+
+func(dc *DataContainer) SetUrl(url string) {
+	dc.Url = url
 }
 
 //TODO
