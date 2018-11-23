@@ -7,8 +7,8 @@ import (
 
 func TestDataContainer_httpSend(t *testing.T) {
 	a := make(map[string]interface{})
-	a["1"] = 1
-	a["2"] = 2
+	a["name"] = "wsz"
+	a["vale"] = "100"
 	send(a, "http://127.0.0.1:8080/task/input")
 }
 

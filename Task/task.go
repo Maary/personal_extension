@@ -10,17 +10,18 @@ import (
 )
 
 type DataContainer struct {
-	Data chan interface{}
-	Length uint8
-	Slice time.Duration
+	Data       chan interface{}
+	Length     uint8
+	Slice      time.Duration
 	SendMethod sendMethod
-	Url string //TODO
+	Url        string //TODO
 }
 
 type sendMethod uint8
+
 const (
 	SEND_PATCH = sendMethod(0)
-	SEND_PER = sendMethod(1)
+	SEND_PER   = sendMethod(1)
 )
 
 func New(length uint8, slice time.Duration) *DataContainer {
@@ -28,32 +29,32 @@ func New(length uint8, slice time.Duration) *DataContainer {
 		panic("Data container store data and send to backend, the length must greater than 0")
 	}
 
-	if slice >= time.Duration(2 * time.Minute) {
+	if slice >= time.Duration(2*time.Minute) {
 		panic("Data container store data and send to backend, the time slice must not greater than 2m")
 	}
 
 	return &DataContainer{
-		Data: make(chan interface{}, length),
+		Data:   make(chan interface{}, length),
 		Length: length,
-		Slice: slice,
+		Slice:  slice,
 	}
 }
 
-func(dc *DataContainer) Push(data interface{}) {
+func (dc *DataContainer) Push(data interface{}) {
 	dc.Data <- data
 }
 
-func(dc *DataContainer) SetUrl(url string) {
+func (dc *DataContainer) SetUrl(url string) {
 	dc.Url = url
 }
 
 //TODO
 func (dc *DataContainer) Send(method sendMethod) {
-	dataSet := make([]interface{}, 0)
 	if uint8(len(dc.Data)) < dc.Length {
 		return
 	}
 	for {
+		dataSet := make([]interface{}, 0)
 		for i := uint8(0); i < dc.Length; i++ {
 			switch method {
 			case SEND_PER:
@@ -63,9 +64,10 @@ func (dc *DataContainer) Send(method sendMethod) {
 				per := <-dc.Data
 				dataSet = append(dataSet, per)
 			}
-			if len(dataSet) > 0 {
-				send(dataSet, dc.Url)
-			}
+
+		}
+		if len(dataSet) > 0 {
+			send(dataSet, dc.Url)
 		}
 	}
 }
@@ -86,6 +88,11 @@ func send(data interface{}, targetUrl string) bool {
 	if rsp.StatusCode == 200 {
 		return true
 	}
-	log.Println(ioutil.ReadAll(rsp.Body))
+	bt, err := ioutil.ReadAll(rsp.Body)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	log.Println(bt)
 	return false
 }
