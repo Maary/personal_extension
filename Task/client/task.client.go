@@ -1,7 +1,6 @@
 package client
 
 import (
-	"brawoser_crawler/task"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -33,7 +32,7 @@ func InitConn(hosts []string, prefix string, serviceName string) {
 	}
 }
 
-func QueryTasks(ctx context.Context, params Task.Task_QueryParam) (ts []*task.Task, err error) {
+func QueryTasks(ctx context.Context, params Task.Task_QueryParam) (ts []*Task.Task, err error) {
 	spar := new(task_rpc_config.Params)
 	jsonB, err := json.Marshal(params)
 	if err != nil {
@@ -44,14 +43,14 @@ func QueryTasks(ctx context.Context, params Task.Task_QueryParam) (ts []*task.Ta
 	if err != nil {
 		return nil, err
 	}
-	ts = make([]*task.Task, 0)
+	ts = make([]*Task.Task, 0)
 	if err := json.Unmarshal([]byte(rsp.Content), &ts); err != nil {
 		return nil, err
 	}
 	return ts, nil
 }
 
-func InsertTasks(ctx context.Context, ts []*task.Task) (status string, err error) {
+func InsertTasks(ctx context.Context, ts []*Task.Task) (status string, err error) {
 	st := new(task_rpc_config.Tasks)
 	if len(ts) > 0 {
 		if jsonB, err := json.Marshal(ts); err != nil {

@@ -9,7 +9,7 @@ import (
 )
 
 type Task struct {
-	URL string
+	Content string
 	Tag
 }
 
@@ -40,8 +40,8 @@ func (t *Task)updateTask(fields []string, newTasks *Task) map[string]interface{}
 	upParam := make(map[string]interface{})
 	for _, f := range fields {
 		switch f {
-		case "URL":
-			upParam["url"] = newTasks.URL
+		case "Content":
+			upParam["content"] = newTasks.Content
 		}
 	}
 	upParam["updated"] = time.Now()
