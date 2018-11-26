@@ -32,7 +32,7 @@ func InitConn(hosts []string, prefix string, serviceName string) {
 	}
 }
 
-func QueryTasks(ctx context.Context, params models.Task_QueryParam) (ts []*models.Task, err error) {
+func QueryTasks(ctx context.Context, params *models.Task_QueryParam) (ts []*models.Task, err error) {
 	spar := new(task_rpc_config.Params)
 	jsonB, err := json.Marshal(params)
 	if err != nil {
