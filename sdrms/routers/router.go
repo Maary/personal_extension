@@ -8,8 +8,7 @@ import (
 
 func init() {
 	//Task
-	beego.Router("/task/input", &controllers.TaskController{}, "Post:ReceiveData")
-
+	beego.Router("/task/query", &controllers.TaskController{}, "Get,Post:GetTasks")
 
 	//用户角色路由
 	beego.Router("/role/index", &controllers.RoleController{}, "*:Index")

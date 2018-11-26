@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"context"
-	"crawler.center/lib/system"
 	"encoding/json"
+	"github.com/astaxie/beego"
 	"personal_extension/Task/client"
 	"personal_extension/Task/models"
 )
@@ -20,9 +20,9 @@ type BackendMessage struct {
 //TODO: add auth
 func (tc *TaskController) Prepare() {
 	tc.BaseController.Prepare()
-	etcdHosts := system.AppConfig.Strings("etcd::hosts")
-	prefix := system.AppConfig.String("etcd::prefix")
-	serviceName := system.AppConfig.String("etcd::task_server")
+	etcdHosts := beego.AppConfig.Strings("etcd::hosts")
+	prefix := beego.AppConfig.String("etcd::prefix")
+	serviceName := beego.AppConfig.String("etcd::task_server")
 	client.InitConn(etcdHosts, prefix, serviceName)
 }
 
@@ -50,7 +50,7 @@ func (tc *TaskController) GetTasks() {
 		tc.ServeJSON()
 	} else {
 		r.Content = ts
-		r.Err = err.Error()
+		r.Err = ""
 		tc.Data["json"] = r
 		tc.ServeJSON()
 	}

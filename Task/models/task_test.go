@@ -1,8 +1,12 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego/orm"
+	"io/ioutil"
+	"net/http"
+	"net/url"
 	"testing"
 	"time"
 	"personal_extension/lib/system"
@@ -55,4 +59,25 @@ func TestQueryTasks(t *testing.T) {
 		panic(err)
 	}
 	fmt.Println(ts)
+}
+
+func TestGetTaskHttp(t *testing.T) {
+	value := make(url.Values)
+	param := new(Task_QueryParam)
+	param.Limit = 2
+	jsonB, err := json.Marshal(param)
+	if err != nil {
+		panic(err)
+	}
+	value.Add("param", string(jsonB))
+	rsp, err := http.PostForm("http://127.0.0.1:8080/task/query", value)
+	if err != nil {
+		panic(err)
+	}
+	bodyB, err := ioutil.ReadAll(rsp.Body)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(bodyB))
+	fmt.Println(rsp.StatusCode)
 }
