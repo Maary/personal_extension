@@ -1,98 +1,119 @@
 package Task
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"fmt"
+	"github.com/astaxie/beego/orm"
 	"log"
-	"net/http"
-	"net/url"
+	"personal_extension/lib/misc"
 	"time"
 )
 
-type DataContainer struct {
-	Data       chan interface{}
-	Length     uint8
-	Slice      time.Duration
-	SendMethod sendMethod
-	Url        string //TODO
+type Task struct {
+	URL string
+	Tag
 }
 
-type sendMethod uint8
-
-const (
-	SEND_PATCH = sendMethod(0)
-	SEND_PER   = sendMethod(1)
-)
-
-func New(length uint8, slice time.Duration) *DataContainer {
-	if length <= 0 {
-		panic("Data container store data and send to backend, the length must greater than 0")
-	}
-
-	if slice >= time.Duration(2*time.Minute) {
-		panic("Data container store data and send to backend, the time slice must not greater than 2m")
-	}
-
-	return &DataContainer{
-		Data:   make(chan interface{}, length),
-		Length: length,
-		Slice:  slice,
-	}
+type Result struct {
+	Data   string
+	Status uint8
+	Tag
 }
 
-func (dc *DataContainer) Push(data interface{}) {
-	dc.Data <- data
+type Tag struct {
+	UUID string
+	Type string
 }
 
-func (dc *DataContainer) SetUrl(url string) {
-	dc.Url = url
+type Task_QueryParam struct {
+	Limit     int
+	Offset    int
+	Order     string
+	AscOrNo   bool
+	Condition map[string]struct { //TODO
+		ExOrNo bool
+		Value interface{}
+	}
 }
 
 //TODO
-func (dc *DataContainer) Send(method sendMethod) {
-	if uint8(len(dc.Data)) < dc.Length {
-		return
-	}
-	for {
-		dataSet := make([]interface{}, 0)
-		for i := uint8(0); i < dc.Length; i++ {
-			switch method {
-			case SEND_PER:
-				per := <-dc.Data
-				send(per, dc.Url)
-			case SEND_PATCH:
-				per := <-dc.Data
-				dataSet = append(dataSet, per)
-			}
-
-		}
-		if len(dataSet) > 0 {
-			send(dataSet, dc.Url)
+func (t *Task)updateTask(fields []string, newTasks *Task) map[string]interface{} {
+	upParam := make(map[string]interface{})
+	for _, f := range fields {
+		switch f {
+		case "URL":
+			upParam["url"] = newTasks.URL
 		}
 	}
+	upParam["updated"] = time.Now()
+	return upParam
 }
 
-func send(data interface{}, targetUrl string) bool {
-	param := make(url.Values)
-	dataByte, err := json.Marshal(data)
+func (t *Task) TableName() string {
+	return TableName("tasks")
+}
+
+func InsertTasks(ts []*Task) (count int64, err error) {
+	return orm.NewOrm().InsertMulti(len(ts), ts)
+}
+
+func QueryTasks(param Task_QueryParam) (ts []*Task, err error) {
+	ts = make([]*Task, 0)
+	query := orm.NewOrm().QueryTable(new(Task))
+	order := "id"
+	limit := 1000
+	offset := 0
+	if param.Order != "" {
+		order = param.Order
+	}
+	if param.AscOrNo == false {
+		order = fmt.Sprintf("-%s", order)
+	}
+	if param.Limit > 1000 {
+		log.Println("query limit may too big")
+	} else if param.Limit <= 0 {
+		panic("query limit can not set the value that is less than 1")
+	} else {
+		limit = param.Limit
+	}
+	if param.Offset < 0 {
+		panic("query offset can not set the value that is less than 0")
+	} else {
+		offset = param.Offset
+	}
+	query = query.Limit(limit).Offset(offset).OrderBy(order)
+	if param.Condition != nil {
+		for field, option := range param.Condition {
+			if option.ExOrNo {
+				query = query.Exclude(field, option.Value)
+			} else {
+				query = query.Filter(field, option.Value)
+			}
+		}
+	}
+	_, err = query.All(&ts)
 	if err != nil {
-		log.Println(err)
-		return false
+		return nil, err
 	}
-	param.Set("data", string(dataByte))
-	rsp, err := http.PostForm(targetUrl, param)
-	if err != nil {
-		log.Println(err)
-		return false
+	return ts, nil
+}
+
+func UpdateTasks(newTasks map[int]*Task) (count int64, err error) {
+	om := orm.NewOrm()
+	query := om.QueryTable(new(Task))
+	for id, newTask := range newTasks {
+		storedTask := new(Task)
+		if err := query.Filter("id", id).One(storedTask); err != nil {
+			return 0, err
+		}
+		ok, fields := misc.StructFac(newTasks, storedTask, "id", "created", "updated")
+		if ok {
+			upPrams := storedTask.updateTask(fields, newTask)
+			_, err := query.Filter("id", id).Update(upPrams)
+			if err != nil {
+				return 0, err
+			}
+			count++
+		}
 	}
-	if rsp.StatusCode == 200 {
-		return true
-	}
-	bt, err := ioutil.ReadAll(rsp.Body)
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	log.Println(bt)
-	return false
+	return count, nil
 }

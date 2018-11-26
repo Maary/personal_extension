@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.Task";
+option java_outer_classname = "ConfigProto";
+
+package task_rpc_config;
+
+// golang的grpc pb文件的生成命令
+// protoc -I ./ ./config.proto --go_out=plugins=grpc:.
+
+service Task {
+    rpc QueryTasks(Params) returns (Tasks) {}
+    rpc InsertTasks(Tasks) returns (SingleStatus) {}
+}
+
+message Params {
+    string ParamsStr = 1;
+}
+
+message Tasks {
+    string Content = 1;
+}
+
+message SingleStatus {
+    string ErrMessage = 1;
+}
+
