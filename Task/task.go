@@ -56,7 +56,7 @@ func InsertTasks(ts []*Task) (count int64, err error) {
 	return orm.NewOrm().InsertMulti(len(ts), ts)
 }
 
-func QueryTasks(param Task_QueryParam) (ts []*Task, err error) {
+func QueryTasks(param *Task_QueryParam) (ts []*Task, err error) {
 	ts = make([]*Task, 0)
 	query := orm.NewOrm().QueryTable(new(Task))
 	order := "id"

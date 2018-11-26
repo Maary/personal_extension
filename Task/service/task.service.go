@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+	"personal_extension/Task"
 	"personal_extension/Task/task_service"
 	"personal_extension/lib/misc"
 	"personal_extension/lib/service"
@@ -18,11 +20,34 @@ type TaskServer struct {
 }
 
 func (t TaskServer) QueryTasks(ctx context.Context, params *task_rpc_config.Params) (*task_rpc_config.Tasks, error) {
-	return nil, nil
+	spar := new(Task.Task_QueryParam)
+	err := json.Unmarshal([]byte(params.ParamsStr), spar)
+	if err != nil {
+		return nil, err
+	}
+	ts, err := Task.QueryTasks(spar)
+	if err != nil {
+		return nil, err
+	}
+	jsonB, err := json.Marshal(ts)
+	if err != nil {
+		return nil, err
+	}
+	return &task_rpc_config.Tasks{Content: string(jsonB)}, nil
 }
 
 func (t TaskServer) InsertTasks(ctx context.Context, tasks *task_rpc_config.Tasks) (*task_rpc_config.SingleStatus, error) {
-	return nil, nil
+	tasksProto := make([]*Task.Task, 0)
+	err := json.Unmarshal([]byte(tasks.Content), &tasksProto)
+	if err != nil {
+		return nil, err
+	}
+	_, err = Task.InsertTasks(tasksProto) //TODO: transport count to caller
+	if err != nil {
+		return nil, err
+	}
+	return &task_rpc_config.SingleStatus{""}, nil
+
 }
 
 func ServerStart() {
