@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
-	"personal_extension/Task"
+	"personal_extension/Task/models"
 	"personal_extension/Task/task_service"
 	"personal_extension/lib/misc"
 	"personal_extension/lib/service"
@@ -20,12 +20,12 @@ type TaskServer struct {
 }
 
 func (t TaskServer) QueryTasks(ctx context.Context, params *task_rpc_config.Params) (*task_rpc_config.Tasks, error) {
-	spar := new(Task.Task_QueryParam)
+	spar := new(models.Task_QueryParam)
 	err := json.Unmarshal([]byte(params.ParamsStr), spar)
 	if err != nil {
 		return nil, err
 	}
-	ts, err := Task.QueryTasks(spar)
+	ts, err := models.QueryTasks(spar)
 	if err != nil {
 		return nil, err
 	}
@@ -37,12 +37,12 @@ func (t TaskServer) QueryTasks(ctx context.Context, params *task_rpc_config.Para
 }
 
 func (t TaskServer) InsertTasks(ctx context.Context, tasks *task_rpc_config.Tasks) (*task_rpc_config.SingleStatus, error) {
-	tasksProto := make([]*Task.Task, 0)
+	tasksProto := make([]*models.Task, 0)
 	err := json.Unmarshal([]byte(tasks.Content), &tasksProto)
 	if err != nil {
 		return nil, err
 	}
-	_, err = Task.InsertTasks(tasksProto) //TODO: transport count to caller
+	_, err = models.InsertTasks(tasksProto) //TODO: transport count to caller
 	if err != nil {
 		return nil, err
 	}

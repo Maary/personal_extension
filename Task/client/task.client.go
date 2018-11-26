@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"log"
-	"personal_extension/Task"
+	"personal_extension/Task/models"
 	"personal_extension/Task/task_service"
 	"personal_extension/lib/service"
 )
@@ -32,7 +32,7 @@ func InitConn(hosts []string, prefix string, serviceName string) {
 	}
 }
 
-func QueryTasks(ctx context.Context, params Task.Task_QueryParam) (ts []*Task.Task, err error) {
+func QueryTasks(ctx context.Context, params models.Task_QueryParam) (ts []*models.Task, err error) {
 	spar := new(task_rpc_config.Params)
 	jsonB, err := json.Marshal(params)
 	if err != nil {
@@ -43,14 +43,14 @@ func QueryTasks(ctx context.Context, params Task.Task_QueryParam) (ts []*Task.Ta
 	if err != nil {
 		return nil, err
 	}
-	ts = make([]*Task.Task, 0)
+	ts = make([]*models.Task, 0)
 	if err := json.Unmarshal([]byte(rsp.Content), &ts); err != nil {
 		return nil, err
 	}
 	return ts, nil
 }
 
-func InsertTasks(ctx context.Context, ts []*Task.Task) (status string, err error) {
+func InsertTasks(ctx context.Context, ts []*models.Task) (status string, err error) {
 	st := new(task_rpc_config.Tasks)
 	if len(ts) > 0 {
 		if jsonB, err := json.Marshal(ts); err != nil {

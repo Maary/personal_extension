@@ -1,4 +1,4 @@
-package Task
+package models
 
 import (
 	"testing"
