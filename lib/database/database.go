@@ -1,10 +1,10 @@
 package database
 
 import (
-	"crawler.center/lib/system"
 	"fmt"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
+	"personal_extension/lib/system"
 )
 
 func InitDatabase() {

@@ -9,19 +9,17 @@ import (
 )
 
 type Task struct {
+	Id      int
 	Content string
-	Tag
+	Created time.Time
+	Updated time.Time
+	Type    string
+	UUID    string
 }
 
 type Result struct {
 	Data   string
 	Status uint8
-	Tag
-}
-
-type Tag struct {
-	UUID string
-	Type string
 }
 
 type Task_QueryParam struct {
@@ -31,12 +29,12 @@ type Task_QueryParam struct {
 	AscOrNo   bool
 	Condition map[string]struct { //TODO
 		ExOrNo bool
-		Value interface{}
+		Value  interface{}
 	}
 }
 
 //TODO
-func (t *Task)updateTask(fields []string, newTasks *Task) map[string]interface{} {
+func (t *Task) updateTask(fields []string, newTasks *Task) map[string]interface{} {
 	upParam := make(map[string]interface{})
 	for _, f := range fields {
 		switch f {

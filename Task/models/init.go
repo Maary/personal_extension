@@ -1,15 +1,15 @@
 package models
 
 import (
-	"github.com/astaxie/beego/orm"
 	"personal_extension/lib/system"
+	"personal_extension/lib/task"
 )
 
 func Init() {
-	orm.RegisterModel(new(Result))
+	task.Register(new(Task))
 }
 
 func TableName(name string) string {
-	prefix := system.AppConfig.String("")
+	prefix := system.AppConfig.String("db_dt_prefix")
 	return prefix+name
 }

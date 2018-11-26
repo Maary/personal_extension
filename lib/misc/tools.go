@@ -184,7 +184,7 @@ func beginWithUpper(s string) bool {
 	return false
 }
 
-func isExistAry(e interface{}, ary []interface{}) bool {
+func isExistAry(e string, ary []string) bool {
 	if len(ary) == 0 {
 		return false
 	}
@@ -245,4 +245,22 @@ func IpFilter(iproot string, ips []string) string {
 		}
 	}
 	return ""
+}
+
+// snake string, XxYy to xx_yy , XxYY to xx_yy
+func SnakeString(s string) string {
+	data := make([]byte, 0, len(s)*2)
+	j := false
+	num := len(s)
+	for i := 0; i < num; i++ {
+		d := s[i]
+		if i > 0 && d >= 'A' && d <= 'Z' && j {
+			data = append(data, '_')
+		}
+		if d != '_' {
+			j = true
+		}
+		data = append(data, d)
+	}
+	return strings.ToLower(string(data[:]))
 }
