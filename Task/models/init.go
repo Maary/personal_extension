@@ -5,7 +5,7 @@ import (
 	"personal_extension/lib/task"
 )
 
-func Init() {
+func Register() {
 	task.Register(new(Task))
 }
 

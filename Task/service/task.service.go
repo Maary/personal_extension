@@ -56,7 +56,7 @@ func ServerStart() {
 	etcdHosts := system.AppConfig.Strings("etcd::hosts")
 	prefix := system.AppConfig.String("etcd::prefix")
 	serviceName := system.AppConfig.String("etcd::task_server")
-	fmt.Println(host, port, etcdHosts, prefix, serviceName)
+	fmt.Println("configuration : ", host, port, etcdHosts, prefix, serviceName)
 	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%s", host, port))
 	if err != nil {
 		log.Fatalf("Failed to listen tcp: %v", err)

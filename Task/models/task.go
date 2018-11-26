@@ -10,6 +10,8 @@ import (
 
 type Task struct {
 	Id      int
+	Page int
+	Offset int
 	Content string
 	Created time.Time
 	Updated time.Time

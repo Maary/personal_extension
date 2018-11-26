@@ -15,7 +15,7 @@ func Dial(servName string) (conn *grpc.ClientConn, err error) {
 		fullName := ServerName(prefix, servName)
 		r := &etcdnaming.GRPCResolver{Client: client}
 		b := grpc.RoundRobin(r)
-		grpcConn, gErr := grpc.DialContext(ctx, fullName, grpc.WithInsecure(), grpc.WithBalancer(b))
+		grpcConn, gErr := grpc.DialContext(ctx, fullName, grpc.WithInsecure(), grpc.WithBalancer(b), grpc.WithBlock())
 		if gErr != nil {
 			return nil, gErr
 		}

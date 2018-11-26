@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/astaxie/beego/orm"
 	_ "personal_extension/sdrms/routers"
 	_ "personal_extension/sdrms/sysinit"
 
@@ -9,6 +8,6 @@ import (
 )
 
 func main() {
-	orm.RunSyncdb("default", false, true)
+	//orm.RunSyncdb("default", false, true)
 	beego.Run()
 }
