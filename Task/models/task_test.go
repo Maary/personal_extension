@@ -1,16 +1,16 @@
 package models
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego/orm"
 	"io/ioutil"
 	"net/http"
-	"net/url"
+	"personal_extension/lib/database"
+	"personal_extension/lib/system"
 	"testing"
 	"time"
-	"personal_extension/lib/system"
-	"personal_extension/lib/database"
 )
 
 func initSys() {
@@ -62,22 +62,31 @@ func TestQueryTasks(t *testing.T) {
 }
 
 func TestGetTaskHttp(t *testing.T) {
-	value := make(url.Values)
+	//value := make(url.Values)
 	param := new(Task_QueryParam)
 	param.Limit = 2
 	jsonB, err := json.Marshal(param)
 	if err != nil {
 		panic(err)
 	}
-	value.Add("param", string(jsonB))
-	rsp, err := http.PostForm("http://127.0.0.1:8080/task/query", value)
+	request, err := http.NewRequest("post", "http://127.0.0.1:8080/task/query", bytes.NewBuffer(jsonB))
 	if err != nil {
 		panic(err)
 	}
-	bodyB, err := ioutil.ReadAll(rsp.Body)
+	back, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(string(bodyB))
-	fmt.Println(rsp.StatusCode)
+	fmt.Println(string(back))
+	//value.Add("param", string(jsonB))
+	//rsp, err := http.PostForm("http://127.0.0.1:8080/task/query", value)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//bodyB, err := ioutil.ReadAll(rsp.Body)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//fmt.Println(string(bodyB))
+	//fmt.Println(rsp.StatusCode)
 }

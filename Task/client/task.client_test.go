@@ -10,7 +10,9 @@ import (
 )
 
 func InitConfigForTest() {
-	InitConn([]string{"192.168.99.254:2379"}, "deepdraw", "task_server_service")
+	//InitConn([]string{"192.168.99.254:2379"}, "deepdraw", "localhost:8588") //For etcd
+	InitConn([]string{}, "", "192.168.4.105:8488")
+	//createClient("127.0.0.1:8588") //For target url, without etcd
 }
 
 func TestInsertTasks(t *testing.T) {
@@ -51,7 +53,8 @@ func TestQueryTasks(t *testing.T) {
 	}
 	in := new(task_rpc_config.Params)
 	in.ParamsStr = string(jsonB)
-	rsp, err := client.QueryTasks(context.Background(), in)
+	ctx, _ := context.WithTimeout(context.Background(), time.Duration(10 * time.Second))
+	rsp, err := client.QueryTasks(ctx, in)
 	if err != nil {
 		panic(err)
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/astaxie/beego"
+	"io/ioutil"
 	"personal_extension/Task/client"
 	"personal_extension/Task/models"
 )
@@ -32,9 +33,9 @@ type result struct {
 }
 
 func (tc *TaskController) GetTasks() {
-	paramStr := tc.GetString("param")
-	param := new(models.Task_QueryParam)
-	err := json.Unmarshal([]byte(paramStr), param)
+	b, _ := ioutil.ReadAll(tc.Ctx.Request.Body)
+	param := make(map[string]*models.Task_QueryParam)
+	err := json.Unmarshal(b, &param)
 	r := new(result)
 	if err != nil {
 		r.Err = err.Error()
@@ -42,7 +43,7 @@ func (tc *TaskController) GetTasks() {
 		tc.Data["json"] = r
 		tc.ServeJSON()
 	}
-	ts, err := client.QueryTasks(context.Background(), param)
+	ts, err := client.QueryTasks(context.Background(), param["param"])
 	if err != nil {
 		r.Err = err.Error()
 		r.Content = nil

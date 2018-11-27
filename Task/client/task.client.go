@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
+	"google.golang.org/grpc"
 	"log"
 	"personal_extension/Task/models"
 	"personal_extension/Task/task_service"
@@ -14,6 +15,14 @@ import (
 var (
 	client task_rpc_config.TaskClient
 )
+
+func createClient(url string) {
+	conn, err := grpc.Dial(url, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	client = task_rpc_config.NewTaskClient(conn)
+}
 
 func InitConn(hosts []string, prefix string, serviceName string) {
 	if client == nil {
